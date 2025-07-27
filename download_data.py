@@ -2,17 +2,14 @@ import kaggle
 import os
 import zipfile
 
-# Create data directory
 os.makedirs('data', exist_ok=True)
 
-# Download dataset (without unzip parameter)
 print("Downloading dataset...")
 kaggle.api.competition_download_files(
     'optiver-realized-volatility-prediction', 
     path='./data'
 )
 
-# Manually unzip the downloaded file
 zip_path = './data/optiver-realized-volatility-prediction.zip'
 if os.path.exists(zip_path):
     print("Unzipping dataset...")
