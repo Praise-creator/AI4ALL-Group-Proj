@@ -13,7 +13,6 @@ from sklearn.metrics import mean_squared_error, r2_score
 import warnings
 warnings.filterwarnings('ignore')
 
-# Page configuration
 st.set_page_config(
     page_title="Optiver Volatility Prediction Analysis",
     page_icon="",
@@ -21,7 +20,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
 st.markdown("""
 <style>
     .main-header {
@@ -102,27 +100,22 @@ def train_model(df, top_features):
     model = LinearRegression()
     model.fit(X_scaled, y)
     
-    # Cross-validation
     tscv = TimeSeriesSplit(n_splits=5)
     cv_scores = cross_val_score(model, X_scaled, y, cv=tscv, scoring='neg_mean_squared_error')
     cv_rmse = np.sqrt(-cv_scores.mean())
     
-    # R² score
     r2 = model.score(X_scaled, y)
     
     return model, scaler, cv_rmse, r2
 
 def main():
-    # Header
     st.markdown('<h1 class="main-header">Optiver Volatility Prediction Analysis</h1>', unsafe_allow_html=True)
     st.markdown("---")
     
-    # Load data
     df = load_data()
     if df is None:
         return
     
-    # Sidebar
     st.sidebar.title("Navigation")
     page = st.sidebar.selectbox(
         "Choose a section:",
@@ -156,7 +149,6 @@ def show_dataset_overview(df):
     
     st.markdown("---")
     
-    # Dataset statistics
     col1, col2 = st.columns(2)
     
     with col1:
@@ -182,14 +174,12 @@ def show_dataset_overview(df):
         fig.update_layout(height=400)
         st.plotly_chart(fig, use_container_width=True)
     
-    # Data sample
     st.subheader("Data Sample")
     st.dataframe(df.head(10), use_container_width=True)
 
 def show_feature_analysis(df):
     st.header("Feature Analysis")
     
-    # Calculate correlations
     correlations_df = calculate_feature_correlations(df)
     
     col1, col2 = st.columns(2)
@@ -198,7 +188,6 @@ def show_feature_analysis(df):
         st.subheader("Top 15 Most Correlated Features")
         top_features = correlations_df.head(15)
         
-        # Create a horizontal bar chart
         fig = px.bar(
             top_features, 
             x='abs_correlation', 
@@ -218,7 +207,6 @@ def show_feature_analysis(df):
         display_df['abs_correlation'] = display_df['abs_correlation'].round(4)
         st.dataframe(display_df, use_container_width=True, height=400)
         
-        # Feature categories
         st.subheader("Feature Categories")
         feature_categories = {
             'Price Volatility': ['log_return_realized_vol', 'log_squared_wap_realized_vol', 'log_wap3_realized_vol'],
@@ -235,15 +223,12 @@ def show_feature_analysis(df):
 def show_model_performance(df):
     st.header("Model Performance")
     
-    # Select top features for modeling
     correlations_df = calculate_feature_correlations(df)
     top_features = correlations_df.head(10)['feature'].tolist()
     
-    # Train model
     with st.spinner("Training model..."):
         model, scaler, cv_rmse, r2 = train_model(df, top_features)
     
-    # Performance metrics
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -258,7 +243,6 @@ def show_model_performance(df):
     
     st.markdown("---")
     
-    # Feature importance
     col1, col2 = st.columns(2)
     
     with col1:
@@ -293,7 +277,6 @@ def show_model_performance(df):
         comparison_df = pd.DataFrame(comparison_data)
         st.dataframe(comparison_df, use_container_width=True)
         
-        # Model interpretation
         st.subheader("Model Insights")
         st.write("**Key Findings:**")
         st.write(f"• The model explains {r2*100:.1f}% of volatility variance")
@@ -304,14 +287,11 @@ def show_model_performance(df):
 def show_visualizations(df):
     st.header("Visualizations")
     
-    # Correlation heatmap
     st.subheader("Feature Correlation Heatmap")
     
-    # Select top features for heatmap
     correlations_df = calculate_feature_correlations(df)
     top_features = correlations_df.head(10)['feature'].tolist()
     
-    # Create correlation matrix
     corr_matrix = df[top_features + ['target']].corr()
     
     fig = px.imshow(
@@ -323,12 +303,10 @@ def show_visualizations(df):
     fig.update_layout(height=600)
     st.plotly_chart(fig, use_container_width=True)
     
-    # Time series analysis
     col1, col2 = st.columns(2)
     
     with col1:
         st.subheader("Volatility Over Time")
-        # Sample time series data
         time_sample = df.groupby('time_id')['target'].mean().reset_index()
         time_sample = time_sample.sample(min(100, len(time_sample))).sort_values('time_id')
         
@@ -342,7 +320,6 @@ def show_visualizations(df):
     
     with col2:
         st.subheader("Stock Volatility Distribution")
-        # Volatility by stock
         stock_vol = df.groupby('stock_id')['target'].agg(['mean', 'std']).reset_index()
         
         fig = px.scatter(
@@ -357,7 +334,6 @@ def show_visualizations(df):
 def show_data_explorer(df):
     st.header("Data Explorer")
     
-    # Interactive filters
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -384,7 +360,6 @@ def show_data_explorer(df):
             format="%.6f"
         )
     
-    # Filter data
     filtered_df = df[
         (df['stock_id'].isin(selected_stocks)) &
         (df['time_id'].between(time_range[0], time_range[1])) &
@@ -393,9 +368,7 @@ def show_data_explorer(df):
     
     st.write(f"**Filtered Data:** {len(filtered_df):,} rows")
     
-    # Display filtered data
     if len(filtered_df) > 0:
-        # Summary statistics
         col1, col2 = st.columns(2)
         
         with col1:
@@ -422,11 +395,9 @@ def show_data_explorer(df):
             )
             st.plotly_chart(fig, use_container_width=True)
         
-        # Raw data table
         st.subheader("Raw Data")
         st.dataframe(filtered_df, use_container_width=True)
         
-        # Download filtered data
         csv = filtered_df.to_csv(index=False)
         st.download_button(
             label="Download Filtered Data as CSV",
