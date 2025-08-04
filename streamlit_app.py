@@ -35,7 +35,6 @@ st.markdown("""
         border-left: 5px solid #1f77b4;
         color: #2c3e50;
     }
-    /* Fix for metric readability */
     .stMetric {
         background-color: transparent !important;
         padding: 0.5rem !important;
@@ -51,7 +50,6 @@ st.markdown("""
         background-color: transparent !important;
         color: #2c3e50 !important;
     }
-    /* Ensure metric text is clearly visible */
     div[data-testid="metric-container"] div {
         color: #2c3e50 !important;
         background-color: transparent !important;
