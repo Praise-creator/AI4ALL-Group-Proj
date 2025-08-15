@@ -15,6 +15,7 @@ Alternatively, you can run the batch file on Windows: `run_streamlit.bat`
 
 ## Data Analysis
 Run the Jupyter notebooks in the `notebooks/` folder for detailed analysis and model training.
+The linear regression model is in the featureengineering.ipynb file. The LightGMB model, in the MLModel_Optiver.ipynb file, uses the training table made in the featureengineering.ipynb. To skip the table creation access the table in csv or parquet here : https://drive.google.com/drive/folders/1qbmvTMvfCfUSKyeAJ88yG2WZsUqrCfB4?usp=sharing  
 
 
 
@@ -28,13 +29,13 @@ This project was developed out of interest in working with real-world competitio
 
 
 ## Key Results
-Linear Regression (10 top correlated features, RMSE):
+## Linear Regression (10 top correlated features, RMSE):
 
   -Cross-Validation RMSE: 0.001397 (not directly comparable to leaderboard RMSPE).
 
   -R² Score: ~0.7705
 
-LightGBM Model (full feature set, RMSPE — comparable to competition metric):
+## LightGBM Model (full feature set, RMSPE — comparable to competition metric):
   -Training RMSPE: 0.286029
 
   -Validation RMSPE: 0.298207
@@ -45,24 +46,24 @@ Feature analysis revealed spread-related features (price_spread_avg_mean, price_
 
 
 ## Methodologies
-Data Preparation
+## Data Preparation
   Merged and processed Kaggle-provided order book and trade data.
   
   Engineered 46 statistical and volatility-based features per stock-time combination.
   
   Selected top features using correlation with target value.
 
-Validation Strategy
+##Validation Strategy: 
   Sequential split: train on earlier periods, validate on later periods to mimic real-world forecasting.
   
   Avoided random splits to preserve time-series structure.
 
-Models Used
+##Models Used
   Linear Regression: simple baseline using top-10 correlated features, scaled with StandardScaler.
   
   LightGBM: gradient boosting model using the full feature set for improved accuracy.
 
-Evaluation
+## Evaluation
   RMSE used for internal Linear Regression evaluation.
   
   RMSPE (competition metric) used for LightGBM to match leaderboard scoring.
@@ -71,7 +72,7 @@ Evaluation
 Kaggle Dataset: https://www.kaggle.com/competitions/optiver-realized-volatility-prediction/overview 
 
 
-## Technologies Used
+## Technologies Used: 
   Python
   
   pandas, NumPy (data manipulation)
